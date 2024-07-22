@@ -1,3 +1,5 @@
+using BookApi.Mappers;
+using BookApi.Services;
 using Microsoft.EntityFrameworkCore;
 using YourNamespace;
 
@@ -12,17 +14,13 @@ builder.Services.AddSwaggerGen();
 // Add DbContext with PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("BuuttiBookCS")));
-    
+
+// DI
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookMapper, BookMapper>();
 
 var app = builder.Build();
-/*
-// Ensure database is created
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
-}
-*/
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
