@@ -1,4 +1,5 @@
 ﻿using BookApi.EntityFramework;
+using BookApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace YourNamespace;
@@ -15,11 +16,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.EntitiesToSnakeCase();
     }
 
-    public DbSet<YourEntity> YourEntities { get; set; }
-}
-
-public class YourEntity
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
+    public DbSet<Book> Books { get; set; }
+    public DbSet<Author> Author { get; set; }
 }
