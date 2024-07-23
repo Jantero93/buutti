@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,7 @@ namespace BookApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_author", x => x.id);
+                    table.PrimaryKey("pk_author", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -36,9 +36,9 @@ namespace BookApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_books", x => x.id);
+                    table.PrimaryKey("pk_books", x => x.id);
                     table.ForeignKey(
-                        name: "FK_books_author_author_id",
+                        name: "fk_books_author_author_id",
                         column: x => x.author_id,
                         principalTable: "author",
                         principalColumn: "id",
@@ -46,7 +46,7 @@ namespace BookApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_books_author_id",
+                name: "ix_books_author_id",
                 table: "books",
                 column: "author_id");
         }

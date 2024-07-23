@@ -1,7 +1,7 @@
+using BookApi.EntityFramework;
 using BookApi.Mappers;
 using BookApi.Services;
 using Microsoft.EntityFrameworkCore;
-using YourNamespace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +11,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add DbContext with PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("BuuttiBookCS")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("BuuttiBookCS"))
+    .UseSnakeCaseNamingConvention()
+);
 
 // DI
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBookMapper, BookMapper>();
 
 var app = builder.Build();
+
+app.UseCors(options =>
+{
+    options.AllowAnyOrigin()
+    .AllowAnyHeader()
+    .AllowAnyHeader();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
