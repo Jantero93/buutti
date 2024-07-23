@@ -9,6 +9,7 @@ namespace BookApi.Controllers;
 public class BookController(IBookService _bookService) : ControllerBase
 {
     [HttpGet]
+    [Route("")]
     public async Task<ActionResult<List<BookAuthorDto>>> GetAllBooks()
     {
         var bookDtos = await _bookService.GetAllBooksWithAuthor();
