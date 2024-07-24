@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240723183500_Initial")]
+    [Migration("20240724165256_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -35,7 +35,8 @@ namespace BookApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -59,12 +60,14 @@ namespace BookApi.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(2087)
+                        .HasColumnType("character varying(2087)")
                         .HasColumnName("description");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
