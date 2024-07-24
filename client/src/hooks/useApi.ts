@@ -1,0 +1,20 @@
+import { useQuery } from "@tanstack/react-query";
+import { get } from "@/utilities/genericFetch";
+import env from "@/utilities/env";
+import { BookAuthor } from "@/dtos/BookAuthor";
+
+const queryKeys = {
+  allBooks: "all-books",
+} as const;
+
+export const useGetAllBooks = () => {
+  const response = useQuery<BookAuthor[], Error>({
+    queryKey: [queryKeys.allBooks],
+    queryFn: async () => {
+      const allBooks = get<BookAuthor[]>(`${env.API_URL}/book`);
+      return allBooks;
+    },
+  });
+
+  return response;
+};

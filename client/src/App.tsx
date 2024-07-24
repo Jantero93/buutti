@@ -3,14 +3,11 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 
 import ErrorMessage from "@/components/ErrorMessage";
-import { useEffect } from "react";
-import { get } from "@/utilities/genericFetch";
-import ENV from "@/utilities/env";
+
+import { useGetAllBooks } from "./hooks/useApi";
 
 const App = () => {
-  useEffect(() => {
-    get(ENV.API_URL + "/book");
-  }, []);
+  const useBooks = useGetAllBooks();
 
   return (
     <Container>
@@ -20,7 +17,9 @@ const App = () => {
       <Button variant="contained" color="primary">
         Click Me
       </Button>
-      <ErrorMessage errMsg="test" />
+      {useBooks.data?.map((book) => (
+        <ErrorMessage key={book.bookId} errMsg={book.title} />
+      ))}
     </Container>
   );
 };
