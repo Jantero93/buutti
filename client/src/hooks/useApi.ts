@@ -8,13 +8,13 @@ const queryKeys = {
 } as const;
 
 export const useGetAllBooks = () => {
-  const response = useQuery<BookAuthor[], Error>({
+  const query = useQuery<BookAuthor[], Error>({
     queryKey: [queryKeys.allBooks],
     queryFn: async () => {
-      const allBooks = get<BookAuthor[]>(`${env.API_URL}/book`);
-      return allBooks;
+      const response = get<BookAuthor[]>(`${env.API_URL}/book`);
+      return response;
     },
   });
 
-  return response;
+  return query;
 };
