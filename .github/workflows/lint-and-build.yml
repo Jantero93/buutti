@@ -28,8 +28,8 @@ jobs:
         id: cache-node-modules
         uses: actions/cache@v4
         with:
-          path: react-client/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/react-client/package-lock.json') }}
+          path: client/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/client/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -74,5 +74,5 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore --verbosity quiet
 
-      - name: Build MapServer API
+      - name: Build BookApi API
         run: dotnet build --configuration Release --no-restore
