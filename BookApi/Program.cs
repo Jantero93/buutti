@@ -14,7 +14,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("BuuttiBookCS"))
-    .UseSnakeCaseNamingConvention()
+    .UseSnakeCaseNamingConvention(),
+    ServiceLifetime.Scoped
 );
 
 // DI
@@ -27,6 +28,7 @@ app.UseCors(options =>
 {
     options.AllowAnyOrigin()
     .AllowAnyHeader()
+    .AllowAnyMethod()
     .AllowAnyHeader();
 });
 
