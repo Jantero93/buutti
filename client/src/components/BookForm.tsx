@@ -1,7 +1,13 @@
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { BookAuthor } from "@/dtos/BookAuthor";
-import { useDeleteBook, useUpdateBook } from "@/hooks/useApi";
+import { useDeleteBook, usePostBook, useUpdateBook } from "@/hooks/useApi";
 import { Box, Button, styled, TextField, TextFieldProps } from "@mui/material";
-import { ChangeEvent, useEffect, useState } from "react";
 
 const StyledTextField = styled(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
@@ -20,20 +26,24 @@ const initialFormInput = {
 
 type BookFormProps = {
   selectedBook: BookAuthor | null;
+  setSelectedBook: Dispatch<SetStateAction<BookAuthor | null>>;
 };
 
-const BookForm = ({ selectedBook }: BookFormProps) => {
+const BookForm = ({ selectedBook, setSelectedBook }: BookFormProps) => {
   const [formInput, setFormInput] = useState(initialFormInput);
   const updateBookMutation = useUpdateBook();
   const deleteBookMutation = useDeleteBook();
+  const postBookMutation = usePostBook();
 
   useEffect(() => {
     if (!selectedBook) return;
 
+    const { title, authorName, description } = selectedBook;
+
     setFormInput({
-      title: selectedBook.title,
-      author: selectedBook.authorName,
-      description: selectedBook.description,
+      title,
+      description,
+      author: authorName,
     });
   }, [selectedBook]);
 
@@ -48,17 +58,33 @@ const BookForm = ({ selectedBook }: BookFormProps) => {
   const updateBook = async () => {
     if (!selectedBook) return;
 
-    const updatedBook: BookAuthor = {
+    const { title, description, author: authorName } = formInput;
+
+    const updatedBookPayload: BookAuthor = {
       ...selectedBook,
-      title: formInput.title,
-      authorName: formInput.author,
-      description: formInput.description,
+      title,
+      description,
+      authorName,
     };
 
-    await updateBookMutation.mutateAsync(updatedBook);
+    const updatedBook =
+      await updateBookMutation.mutateAsync(updatedBookPayload);
+    setSelectedBook(updatedBook);
   };
 
-  const postBook = () => {};
+  const postBook = async () => {
+    const { author: authorName, description, title } = formInput;
+
+    const bookPayload: Partial<BookAuthor> = {
+      authorName,
+      description,
+      title,
+    };
+
+    const newBook = await postBookMutation.mutateAsync(bookPayload);
+    console.log("newBook", newBook);
+    setSelectedBook(newBook);
+  };
 
   const deleteBook = async () => {
     if (!selectedBook) return;
