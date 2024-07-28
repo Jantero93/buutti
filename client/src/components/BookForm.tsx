@@ -8,6 +8,7 @@ import {
 import { BookAuthor } from "@/dtos/BookAuthor";
 import { useDeleteBook, usePostBook, useUpdateBook } from "@/hooks/useApi";
 import { Box, Button, styled, TextField, TextFieldProps } from "@mui/material";
+import ErrorMessage from "./ErrorMessage";
 
 const StyledTextField = styled(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
@@ -31,12 +32,36 @@ type BookFormProps = {
 
 const BookForm = ({ selectedBook, setSelectedBook }: BookFormProps) => {
   const [formInput, setFormInput] = useState(initialFormInput);
+  const [error, setError] = useState("");
   const updateBookMutation = useUpdateBook();
   const deleteBookMutation = useDeleteBook();
   const postBookMutation = usePostBook();
 
   useEffect(() => {
+    if (updateBookMutation.error) {
+      setError(updateBookMutation.error.message);
+      return;
+    }
+
+    if (deleteBookMutation.error) {
+      setError(deleteBookMutation.error.message);
+    }
+
+    if (postBookMutation.error) {
+      setError(postBookMutation.error.message);
+      return;
+    }
+  }, [
+    updateBookMutation.error,
+    deleteBookMutation.error,
+    postBookMutation.error,
+    setError,
+  ]);
+
+  useEffect(() => {
     if (!selectedBook) return;
+
+    setError("");
 
     const { title, authorName, description } = selectedBook;
 
@@ -69,6 +94,7 @@ const BookForm = ({ selectedBook, setSelectedBook }: BookFormProps) => {
 
     const updatedBook =
       await updateBookMutation.mutateAsync(updatedBookPayload);
+
     setSelectedBook(updatedBook);
   };
 
@@ -82,7 +108,6 @@ const BookForm = ({ selectedBook, setSelectedBook }: BookFormProps) => {
     };
 
     const newBook = await postBookMutation.mutateAsync(bookPayload);
-    console.log("newBook", newBook);
     setSelectedBook(newBook);
   };
 
@@ -100,7 +125,6 @@ const BookForm = ({ selectedBook, setSelectedBook }: BookFormProps) => {
         value={formInput.title}
         onChange={handleInputChange}
         isFirst
-        disabled={!selectedBook}
       />
       <StyledTextField
         label="Author"
@@ -143,6 +167,7 @@ const BookForm = ({ selectedBook, setSelectedBook }: BookFormProps) => {
           Delete
         </Button>
       </Box>
+      <ErrorMessage errMsg={error} />
     </Box>
   );
 };

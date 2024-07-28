@@ -7,7 +7,6 @@ import {
   Container,
   Box,
   styled,
-  Typography,
 } from "@mui/material";
 import { BookAuthor } from "@/dtos/BookAuthor";
 import { useGetAllBooks } from "@/hooks/useApi";
@@ -16,6 +15,13 @@ const StyledListItemText = styled(ListItemText)`
   & .MuiListItemText-primary {
     color: black;
     font-size: 1.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  & .MuiListItemText-secondary {
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
@@ -37,19 +43,9 @@ type BookListProps = {
 };
 
 const BookList = ({ selectedBook, setSelectedBook }: BookListProps) => {
-  const { data, error } = useGetAllBooks();
+  const { data } = useGetAllBooks();
 
   const handleListItemClick = (book: BookAuthor) => setSelectedBook(book);
-
-  if (error) {
-    return (
-      <Container>
-        <Box>
-          <Typography>{error.message}</Typography>
-        </Box>
-      </Container>
-    );
-  }
 
   const sortedBooks = data
     ? [...data].sort((a, b) => a.authorName.localeCompare(b.authorName, "fi"))

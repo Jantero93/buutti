@@ -10,6 +10,7 @@ const StyledErrorBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.error.main,
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
+  marginTop: theme.spacing(1),
 }));
 
 const StyledErrorMessage = styled(Typography)(({ theme }) => ({
@@ -18,6 +19,8 @@ const StyledErrorMessage = styled(Typography)(({ theme }) => ({
 }));
 
 const ErrorMessage = ({ errMsg }: ErrorMessageProps) => {
+  if (!errMsg) return null;
+
   return (
     <StyledErrorBox>
       <StyledErrorMessage>{errMsg}</StyledErrorMessage>
