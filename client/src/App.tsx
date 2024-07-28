@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Container, Grid, styled } from "@mui/material";
 import BookForm from "@/components/BookForm";
 import BookList from "@/components/BookList";
+import { BookAuthor } from "./dtos/BookAuthor";
 
 const CenteredContainer = styled(Container)({
   display: "flex",
@@ -10,14 +12,19 @@ const CenteredContainer = styled(Container)({
 });
 
 const App = () => {
+  const [selectedBook, setSelectedBook] = useState<BookAuthor | null>(null);
+
   return (
     <CenteredContainer>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} component={"section"}>
-          <BookForm />
+          <BookForm selectedBook={selectedBook} />
         </Grid>
         <Grid item xs={12} sm={6} component={"section"}>
-          <BookList />
+          <BookList
+            selectedBook={selectedBook}
+            setSelectedBook={setSelectedBook}
+          />
         </Grid>
       </Grid>
     </CenteredContainer>

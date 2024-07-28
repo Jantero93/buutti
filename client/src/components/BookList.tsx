@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import {
   List,
   ListItem,
@@ -31,18 +31,24 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   },
 }));
 
-const BookList = () => {
-  const { data, isLoading, error } = useGetAllBooks();
-  const [selectedBook, setSelectedBook] = useState<BookAuthor | null>(null);
+type BookListProps = {
+  selectedBook: BookAuthor | null;
+  setSelectedBook: Dispatch<SetStateAction<BookAuthor | null>>;
+};
+
+const BookList = ({ selectedBook, setSelectedBook }: BookListProps) => {
+  const { data, error } = useGetAllBooks();
 
   const handleListItemClick = (book: BookAuthor) => setSelectedBook(book);
 
   if (error) {
-    return <Typography>{error.message}</Typography>;
-  }
-
-  if (isLoading) {
-    return <Typography>Is Loading</Typography>;
+    return (
+      <Container>
+        <Box>
+          <Typography>{error.message}</Typography>
+        </Box>
+      </Container>
+    );
   }
 
   return (
