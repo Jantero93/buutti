@@ -12,8 +12,6 @@ export const put = <T>(url: string, payload: unknown): Promise<T> =>
 
 export const del = <T>(url: string): Promise<T> => apiCall(url, "DELETE");
 
-export type ErrorApiResponse = { message: string };
-
 /**
  * Generic api call. Expects payload and answer to be application/json
  */
@@ -42,8 +40,8 @@ const apiCall = async <T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const errResMsg = (await response.json()) as unknown as ErrorApiResponse;
-      console.error("API call failed, error:", errResMsg);
+      const res = (await response.json()) as { message: string };
+      throw new Error(res.message);
     }
 
     const contentType = response.headers.get(Headers["Content-Type"]);
@@ -52,22 +50,9 @@ const apiCall = async <T>(
       return response.json() as Promise<T>;
     }
 
-    if (response.status === 204 || response.status === 205) {
-      return {} as T;
-    }
-
-    return {} as T;
-  } catch (e: unknown) {
-    if (!(e instanceof Error)) {
-      console.warn("API call failed, reason:", e);
-    }
-
-    if ((e as Error).name === "AbortError") {
-      console.warn("API call aborted due to timeout");
-    }
-
-    console.error("Exception in apiCall method", (e as Error).message);
-
-    throw e;
+    throw new Error("Content type is not supported");
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
   }
 };

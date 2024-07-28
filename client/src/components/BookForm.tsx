@@ -51,10 +51,10 @@ const BookForm = () => {
         onChange={handleInputChange}
       />
       <Box mt={2}>
-        <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+        <Button variant="contained" color="primary" sx={{ mr: "0.5em" }}>
           Save New
         </Button>
-        <Button variant="contained" color="secondary" sx={{ mr: 1 }}>
+        <Button variant="contained" color="secondary" sx={{ mr: "0.5em" }}>
           Save
         </Button>
         <Button variant="outlined" color="error">
