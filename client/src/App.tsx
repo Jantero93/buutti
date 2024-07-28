@@ -9,6 +9,7 @@ const CenteredContainer = styled(Container)({
   justifyContent: "center",
   alignItems: "flex-start",
   height: "100vh",
+  padding: "1rem",
 });
 
 const App = () => {
