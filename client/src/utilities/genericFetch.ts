@@ -41,6 +41,7 @@ const apiCall = async <T>(
 
     if (!response.ok) {
       const res = (await response.json()) as { message: string };
+      console.warn(`Error on api fetch: ${res.message}`);
       throw new Error(res.message);
     }
 
@@ -50,7 +51,7 @@ const apiCall = async <T>(
       return response.json() as Promise<T>;
     }
 
-    throw new Error("Content type is not supported");
+    return {} as T;
   } catch (error) {
     clearTimeout(timeoutId);
     throw error;

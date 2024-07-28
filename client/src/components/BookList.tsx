@@ -51,11 +51,15 @@ const BookList = ({ selectedBook, setSelectedBook }: BookListProps) => {
     );
   }
 
+  const sortedBooks = data
+    ? [...data].sort((a, b) => a.authorName.localeCompare(b.authorName, "fi"))
+    : [];
+
   return (
     <Container>
       <Box>
         <List disablePadding>
-          {data?.map((book) => (
+          {sortedBooks.map((book) => (
             <ListItem key={book.bookId} disablePadding>
               <StyledListItemButton
                 autoFocus={false}

@@ -1,17 +1,16 @@
 /* eslint-disable no-useless-catch */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { del, get, put } from "@/utilities/genericFetch";
+import { del, get, post, put } from "@/utilities/genericFetch";
 import env from "@/utilities/env";
 import { BookAuthor } from "@/dtos/BookAuthor";
 
-export const queryKeys = {
+export const QueryKeys = {
   allBooks: "all-books",
-  selectedBook: "selected-book",
 } as const;
 
 export const useGetAllBooks = () => {
   const query = useQuery<BookAuthor[], Error>({
-    queryKey: [queryKeys.allBooks],
+    queryKey: [QueryKeys.allBooks],
     queryFn: async () => {
       try {
         const res = await get<BookAuthor[]>(`${env.API_URL}/book`);
@@ -35,16 +34,27 @@ export const useUpdateBook = () => {
     mutationFn: async (book) =>
       await put<BookAuthor>(`${env.API_URL}/book/${book.bookId}`, book),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: [queryKeys.allBooks] }),
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.allBooks] }),
   });
 };
 
 export const useDeleteBook = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<unknown, Error, unknown>({
+  return useMutation<unknown, Error, number>({
     mutationFn: async (bookId) => await del(`${env.API_URL}/book/${bookId}`),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: [queryKeys.allBooks] }),
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.allBooks] }),
+  });
+};
+
+export const usePostBook = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<BookAuthor, Error, Partial<BookAuthor>>({
+    mutationFn: async (newBook) =>
+      await post<BookAuthor>(`${env.API_URL}/book`, newBook),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.allBooks] }),
   });
 };

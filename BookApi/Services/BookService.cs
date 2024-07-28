@@ -28,26 +28,26 @@ public class BookService(ApplicationDbContext _context, IBookMapper _mapper, ILo
         return bookDtos;
     }
 
-    public async Task<BookAuthorDto> UpdateBookAuthor(BookAuthorDto bookAuthor)
+    public async Task<BookAuthorDto> UpdateBookAuthor(BookAuthorDto bookAuthorDto)
     {
-        _logger.LogInformation("Starting to update book with id {Id}", bookAuthor.BookId);
+        _logger.LogInformation("Starting to update book with id {Id}", bookAuthorDto.BookId);
 
         var bookEntity = await _context.Books
             .Include(b => b.Author)
-            .FirstOrDefaultAsync(x => x.Id == bookAuthor.BookId);
+            .FirstOrDefaultAsync(x => x.Id == bookAuthorDto.BookId);
 
         if (bookEntity is null)
         {
-            _logger.LogWarning("Not found book by id: {Id}", bookAuthor.BookId);
-            throw new ApiException($"Book with id {bookAuthor.BookId} not found", StatusCodes.Status404NotFound);
+            _logger.LogWarning("Not found book by id: {Id}", bookAuthorDto.BookId);
+            throw new ApiException($"Book with id {bookAuthorDto.BookId} not found", StatusCodes.Status404NotFound);
         }
 
-        if (bookEntity.Author.Name != bookAuthor.AuthorName &&
-            !string.IsNullOrWhiteSpace(bookAuthor.AuthorName))
+        if (bookEntity.Author.Name != bookAuthorDto.AuthorName &&
+            !string.IsNullOrWhiteSpace(bookAuthorDto.AuthorName))
         {
             // Try to find author from db, if doesn't exists add new
             var existingAuthor = await _context.Author
-                .FirstOrDefaultAsync(a => a.Name == bookAuthor.AuthorName);
+                .FirstOrDefaultAsync(a => a.Name == bookAuthorDto.AuthorName);
 
             if (existingAuthor is not null)
             {
@@ -55,7 +55,7 @@ public class BookService(ApplicationDbContext _context, IBookMapper _mapper, ILo
             }
             else
             {
-                var newAuthor = new Author { Name = bookAuthor.AuthorName };
+                var newAuthor = new Author { Name = bookAuthorDto.AuthorName };
                 bookEntity.Author = newAuthor;
                 _context.Author.Add(newAuthor);
 
@@ -63,8 +63,8 @@ public class BookService(ApplicationDbContext _context, IBookMapper _mapper, ILo
             }
         }
 
-        bookEntity.Title = bookAuthor.Title ?? bookEntity.Title;
-        bookEntity.Description = bookAuthor.Description ?? bookEntity.Description;
+        bookEntity.Title = bookAuthorDto.Title ?? bookEntity.Title;
+        bookEntity.Description = bookAuthorDto.Description ?? bookEntity.Description;
 
         await _context.SaveChangesAsync();
 
@@ -85,5 +85,43 @@ public class BookService(ApplicationDbContext _context, IBookMapper _mapper, ILo
 
         _context.Remove(entityBook);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<BookAuthorDto> CreateBook(BookAuthorDto bookAuthorDto)
+    {
+        _logger.LogInformation("Starting to create book with title {Title}", bookAuthorDto.Title);
+
+        var existingBook = await _context.Books
+            .FirstOrDefaultAsync(x => x.Title == bookAuthorDto.Title);
+
+        if (existingBook is not null)
+        {
+            _logger.LogWarning("Book with title {Title} already exists", bookAuthorDto.Title);
+            throw new ApiException($"Book with title {bookAuthorDto.Title} already exists", StatusCodes.Status409Conflict);
+        }
+
+        var authorEntity = await _context.Author
+            .FirstOrDefaultAsync(a => a.Name == bookAuthorDto.AuthorName);
+
+        if (authorEntity is null)
+        {
+            authorEntity = new Author { Name = bookAuthorDto.AuthorName };
+            _context.Author.Add(authorEntity);
+            _logger.LogInformation("Created new author with name {Name}", authorEntity.Name);
+        }
+
+        var bookEntity = new Book
+        {
+            Title = bookAuthorDto.Title,
+            Description = bookAuthorDto.Description,
+            Author = authorEntity
+        };
+
+        _context.Books.Add(bookEntity);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Created book with id {Id}", bookEntity.Id);
+
+        return _mapper.MapBookToBookAuthorDto(bookEntity);
     }
 }

@@ -18,7 +18,10 @@ const App = () => {
     <CenteredContainer>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} component={"section"}>
-          <BookForm selectedBook={selectedBook} />
+          <BookForm
+            selectedBook={selectedBook}
+            setSelectedBook={setSelectedBook}
+          />
         </Grid>
         <Grid item xs={12} sm={6} component={"section"}>
           <BookList

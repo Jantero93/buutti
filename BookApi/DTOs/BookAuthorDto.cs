@@ -2,9 +2,9 @@
 
 public record BookAuthorDto
 {
-    public required int BookId { get; init; }
+    public int BookId { get; set; }
     public required string Title { get; init; }
     public required string Description { get; init; }
     public required string AuthorName { get; init; }
-    public required int AuthorId { get; init; }
+    public int AuthorId { get; set; }
 }
