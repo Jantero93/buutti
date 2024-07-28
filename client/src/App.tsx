@@ -1,4 +1,3 @@
-import { useGetAllBooks } from "./hooks/useApi";
 import { Container, Grid, styled } from "@mui/material";
 import BookForm from "@/components/BookForm";
 import BookList from "@/components/BookList";
@@ -11,8 +10,6 @@ const CenteredContainer = styled(Container)({
 });
 
 const App = () => {
-  const { data } = useGetAllBooks();
-
   return (
     <CenteredContainer>
       <Grid container spacing={2}>
@@ -20,7 +17,7 @@ const App = () => {
           <BookForm />
         </Grid>
         <Grid item xs={12} sm={6} component={"section"}>
-          <BookList books={data} />
+          <BookList />
         </Grid>
       </Grid>
     </CenteredContainer>

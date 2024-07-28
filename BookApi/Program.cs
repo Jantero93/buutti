@@ -1,5 +1,6 @@
 using BookApi.EntityFramework;
 using BookApi.Mappers;
+using BookApi.Middlewares;
 using BookApi.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,9 @@ app.UseCors(options =>
     .AllowAnyHeader()
     .AllowAnyHeader();
 });
+
+// Middlewares
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

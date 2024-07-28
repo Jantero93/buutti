@@ -7,8 +7,10 @@ import {
   Container,
   Box,
   styled,
+  Typography,
 } from "@mui/material";
 import { BookAuthor } from "@/dtos/BookAuthor";
+import { useGetAllBooks } from "@/hooks/useApi";
 
 const StyledListItemText = styled(ListItemText)`
   & .MuiListItemText-primary {
@@ -29,20 +31,25 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   },
 }));
 
-type BookListProps = {
-  books?: BookAuthor[];
-};
-
-const BookList = ({ books }: BookListProps) => {
+const BookList = () => {
+  const { data, isLoading, error } = useGetAllBooks();
   const [selectedBook, setSelectedBook] = useState<BookAuthor | null>(null);
 
   const handleListItemClick = (book: BookAuthor) => setSelectedBook(book);
+
+  if (error) {
+    return <Typography>{error.message}</Typography>;
+  }
+
+  if (isLoading) {
+    return <Typography>Is Loading</Typography>;
+  }
 
   return (
     <Container>
       <Box>
         <List disablePadding>
-          {books?.map((book) => (
+          {data?.map((book) => (
             <ListItem key={book.bookId} disablePadding>
               <StyledListItemButton
                 autoFocus={false}
