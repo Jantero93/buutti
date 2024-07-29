@@ -31,10 +31,18 @@ The client is mobile responsive. Because I applied for backend position, I didn'
 The entire application is containerized using Docker. The client runs in nginx when used with Docker.
 
 ## Starting the application
+
+
+
 On root directory run command
 `docker-compose --file docker-compose.yml --env-file .env.local up --build`
+
+**Client is hosted on localhost port 80 when using Docker**
+
 It builds the application with production mode. All needed configuration is included in .env.local file.
 Migrations etc. are run automatically on start of the application.
+
+
 
 
 
