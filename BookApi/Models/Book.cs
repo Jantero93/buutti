@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookApi.Models;
 
+[Index(nameof(Title), IsUnique = true)]
 public record Book
 {
     public int Id { get; set; }
