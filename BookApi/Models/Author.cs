@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookApi.Models;
 
+[Index(nameof(Name), IsUnique = true)]
 public record Author
 {
     public int Id { get; set; }

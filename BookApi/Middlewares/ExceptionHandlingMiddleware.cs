@@ -1,49 +1,42 @@
 ﻿using BookApi.Utilities;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 
 namespace BookApi.Middlewares;
 
 public class ExceptionHandlingMiddleware(RequestDelegate _next, ILogger<ExceptionHandlingMiddleware> _logger)
 {
-    public async Task InvokeAsync(HttpContext ctx)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(ctx);
+            await _next(context);
         }
-        catch (ApiException e)
+        catch (ApiException ex)
         {
-            _logger.LogError(e, $"Exception handled by ExceptionHandlingMiddleware");
-            await HandleApiExceptionAsync(ctx, e);
+            _logger.LogError(ex, "Exception handled by ExceptionHandlingMiddleware");
+            await HandleExceptionAsync(context, ex.StatusCode, ex.Message);
         }
-        catch (Exception e)
+        catch (DbUpdateException ex)
         {
-            _logger.LogError(e, "An unhandled exception has occurred.");
-            await HandleExceptionAsync(ctx);
+            _logger.LogError(ex, "Error on interacting with the database");
+            await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.InnerException?.Message ?? ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unhandled exception has occurred.");
+            await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
         }
     }
 
-    private async static Task HandleApiExceptionAsync(HttpContext ctx, ApiException apiException)
-    {
-        ctx.Response.ContentType = MediaTypeNames.Application.Json;
-        ctx.Response.StatusCode = apiException.StatusCode;
-
-        var response = new
-        {
-            Message = apiException.Message
-        };
-
-        await ctx.Response.WriteAsJsonAsync(response);
-    }
-
-    private async static Task HandleExceptionAsync(HttpContext context)
+    private static async Task HandleExceptionAsync(HttpContext context, int statusCode, string message)
     {
         context.Response.ContentType = MediaTypeNames.Application.Json;
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.StatusCode = statusCode;
 
         var response = new
         {
-            Message = "An unexpected error occurred."
+            Message = message
         };
 
         await context.Response.WriteAsJsonAsync(response);
